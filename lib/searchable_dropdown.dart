@@ -315,10 +315,7 @@ class SearchableDropdown<T> extends StatefulWidget {
     this.menuConstraints,
     this.readOnly = false,
     this.menuBackgroundColor,
-  })  : assert(items != null),
-        assert(iconSize != null),
-        assert(isExpanded != null),
-        assert(!multipleSelection || doneButton != null),
+  })  : assert(!multipleSelection || doneButton != null),
         assert(menuConstraints == null || !dialogBox!),
         super(key: key);
 
@@ -355,10 +352,7 @@ class SearchableDropdown<T> extends StatefulWidget {
     this.menuConstraints,
     this.readOnly = false,
     this.menuBackgroundColor,
-  })  : assert(items != null),
-        assert(iconSize != null),
-        assert(isExpanded != null),
-        assert(!multipleSelection || doneButton != null),
+  })  : assert(!multipleSelection || doneButton != null),
         assert(menuConstraints == null || !dialogBox!),
         super(key: key);
 
@@ -372,14 +366,13 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T?>> {
 
   TextStyle? get _textStyle =>
       widget.style ??
-      (_enabled && !(widget.readOnly ?? false)
-          ? Theme.of(context).textTheme.subhead
+      (_enabled && !(widget.readOnly)
+          ? Theme.of(context).textTheme.subtitle1
           : Theme.of(context)
               .textTheme
-              .subhead!
+              .subtitle1!
               .copyWith(color: _disabledIconColor));
   bool get _enabled =>
-      widget.items != null &&
       widget.items.isNotEmpty &&
       widget.onChanged != null;
 
@@ -392,8 +385,9 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T?>> {
         return Colors.grey.shade700;
       case Brightness.dark:
         return Colors.white70;
-    }
+      default:
     return Colors.grey.shade700;
+    }
   }
 
   Color? get _disabledIconColor {
@@ -405,13 +399,13 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T?>> {
         return Colors.grey.shade400;
       case Brightness.dark:
         return Colors.white10;
-    }
+      default:
     return Colors.grey.shade400;
+    }
   }
 
   Color? get _iconColor {
-    // These colors are not defined in the Material Design spec.
-    return (_enabled && !(widget.readOnly ?? false)
+    return (_enabled && !(widget.readOnly)
         ? _enabledIconColor
         : _disabledIconColor);
   }
@@ -431,7 +425,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T?>> {
     return (widget.multipleSelection
         ? selectedItems
         : selectedItems?.isNotEmpty ?? false
-            ? widget.items[selectedItems!.first]?.value
+            ? widget.items[selectedItems!.first].value
             : null);
   }
 
@@ -452,10 +446,10 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T?>> {
       return;
     }
     if (widget.multipleSelection) {
-      selectedItems = List<int>.from(widget.selectedItems ?? []);
+      selectedItems = List<int>.from(widget.selectedItems);
     } else if (widget.value != null) {
       int i = indexFromValue(widget.value);
-      if (i != null && i != -1) {
+      if (i != -1) {
         selectedItems = [i];
       }
     }
@@ -528,7 +522,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T?>> {
       innerItemsWidget = items[hintIndex];
     } else {
       innerItemsWidget = Column(
-        children: list as List<Widget>,
+        children: list,
       );
     }
     final EdgeInsetsGeometry padding = ButtonTheme.of(context).alignedDropdown
@@ -538,7 +532,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T?>> {
     Widget clickable = InkWell(
         key: Key(
             "clickableResultPlaceHolder"), //this key is used for running automated tests
-        onTap: (widget.readOnly ?? false) || !_enabled
+        onTap: (widget.readOnly) || !_enabled
             ? null
             : () async {
                 if (widget.dialogBox!) {
@@ -603,7 +597,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T?>> {
                                       : _disabledIconColor,
                               size: widget.iconSize,
                             ),
-                            child: widget.clearIcon ?? Icon(Icons.clear),
+                            child: widget.clearIcon,
                           ),
                         ],
                       ),
@@ -716,8 +710,7 @@ class DropdownDialog<T> extends StatefulWidget {
     this.menuConstraints,
     this.callOnPop,
     this.menuBackgroundColor,
-  })  : assert(items != null),
-        super(key: key);
+  })  : super(key: key);
 
   _DropdownDialogState<T> createState() => new _DropdownDialogState<T>();
 }
@@ -834,7 +827,7 @@ class _DropdownDialogState<T> extends State<DropdownDialog> {
             ? prepareWidget(widget.doneButton,
                 parameter: selectedResult,
                 context: context, stringToWidgetFunction: (string) {
-                return (FlatButton.icon(
+                return ElevatedButton.icon(
                     onPressed: !valid
                         ? null
                         : () {
@@ -842,7 +835,7 @@ class _DropdownDialogState<T> extends State<DropdownDialog> {
                             setState(() {});
                           },
                     icon: Icon(Icons.close),
-                    label: Text(string)));
+                    label: Text(string));
               })
             : SizedBox.shrink();
     return widget.hint != null
@@ -995,7 +988,7 @@ class _DropdownDialogState<T> extends State<DropdownDialog> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                FlatButton(
+                TextButton(
                   onPressed: () {
                     pop();
                   },

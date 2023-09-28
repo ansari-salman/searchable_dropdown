@@ -499,7 +499,7 @@ void main() {
         }
       }
       await tester.pump();
-      final doneButtonFinder = find.widgetWithText(FlatButton, "Close");
+      final doneButtonFinder = find.widgetWithText(SizedBox, "Close");
       expect(doneButtonFinder, findsNWidgets(1), reason: "Done button");
       await tester.tap(doneButtonFinder);
       await tester.pump();
